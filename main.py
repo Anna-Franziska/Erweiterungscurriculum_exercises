@@ -1,206 +1,91 @@
-from collections import deque
+# Exercise 1
+def power(a, b):
+   if a < 0 or b < 0:
+       return -1
+   if a == 1:
+       return 1
+   if b > 0:
+        return a * power(a, b - 1)
+   else:
+        return 1
 
 
+# Exercise 2
 
-#class for holding the data, defaults to empty node if no data is given
-class Node:
-    def __init__(self, data=None):
-        self.data = data
-        self.next = None #pointer to the next node
-
-# Class for managing the list and nodes
-class SinglyLinkedList:
-    def __init__(self):
-        self.head = None
-        self.size = 0
-
-    def append(self, data):
-        node = Node(data)
-
-        if self.head == None:  # if the node is empty, the new node is the head
-            self.head = node
-        else:  # if not empty iterate through items and append new node at the end (tail)
-            current = self.head
-            while current.next:
-                current = current.next
-            current.next = node
-        self.size += 1 #always update the size to prevent costly iterations to get the size
-
-    #defining iteration function to make iterating over nodes in the list possible
-    def __iter__(self):
-        current = self.head
-        while current:
-            val = current.data
-            current = current.next
-            yield val
-
-    def get_size(self):
-        return self.size
+def binary_search(numbers, num):
+    assert num in numbers
+    numbers = sorted(numbers) #make sure the list is sorted
+    return _binary_search(numbers, num, 0, len(numbers)-1)
 
 
-    def iterate_modification(self):
-        current = self.head
-        while current:
-            val = current
-            current = current.next
-            yield val
+def _binary_search(numbers, num, start, end):
 
+    middle_index = int((start + end) / 2)
+    curr_number = numbers[middle_index]
 
+    if curr_number == num: # In case the first middle index is desired value
+        return middle_index
 
-    def clear(self):
+    elif num < curr_number:
+        # go left
+        new_start = start
+        new_end   = middle_index  # - 1
+        return _binary_search(numbers, num, new_start, new_end)
 
-        allNodes = [node for node in self.iterate_modification()]
-        for node in allNodes:
-            node.next = None
-        self.head = None
-        self.size = 0
-        return
+    else:  # num > curr_number
+        # go right
+        new_start = middle_index  # + 1
+        new_end   = end
+        return _binary_search(numbers, num, new_start, new_end)
 
-    def get_data(self, data):
+#Exercise 3 - 7
+class HashTable:
 
-        allNodes = [node for node in self.iterate_modification()]
-        for node in allNodes:
-            if node.data == data:
-                return data
+    def __init__(self, size):
+
+        self.size = size
+
+        self.buckets = [[] for i in range(size)]
+
+    def __my_hash(self, element):
+
+        if type(element) == int or type(element) == float:
+            return element % self.size
+
+        return len(element) % self.size
+
+    def insert(self, element):
+
+        h = self.__my_hash(element)
+
+        self.buckets[h].append(element)
+
+    def get_element(self, element):
+
+        bucket = self.__my_hash(element)
+
+        if element in self.buckets[bucket]:
+            self.buckets[bucket].remove(element)
+
+            return element
+
         return False
 
-
-    def delete(self, data):
-
-        allNodes = [node for node in self.iterate_modification()]
-        for node in allNodes:
-            if node.next.data == data:
-                node.next = node.next.next
-                self.size -= 1
-                return
-
-
-class NodeDLL:
-    def __init__(self, data=None):
-        self.data = data
-        self.prev = None
-        self.next = None
-
-
-
-class DoublyLinkedList:
-
-    def __init__(self):
-        self.head = None
-        self.size = 0
-
-    def append(self, data):
-        node = Node(data)
-
-        if self.head == None:  # if the node is empty, the new node is the head
-            self.head = node
-
-        else:  # if not empty iterate through items and append new node at the end (tail)
-            current = self.head
-            while current.next:
-                current = current.next
-            current.next = node
-            node.prev = current
-
-        self.size += 1  # always update the size to prevent costly iterations to get the size
-
-    # defining iteration function to make iterating over nodes in the list possible
-    def __iter__(self):
-        current = self.head
-        while current:
-            val = current.data
-            current = current.next
-            yield val
-
     def get_size(self):
-        return self.size
 
-
-    def iterate_modification(self):
-        current = self.head
-        while current:
-            val = current
-            current = current.next
-            yield val
-
-
-
-    def clear(self):
-
-
-        allNodes = [node for node in self.iterate_modification()]
-        for node in allNodes:
-            node.next = None
-        self.head = None
-        self.size = 0
-        return
-
-    def get_data(self, data):
-
-
-        allNodes = [node for node in self.iterate_modification()]
-        for node in allNodes:
-            if node.data == data:
-                return data
-        return False
-
-
-    def delete(self, data):
-
-
-        allNodes = [node for node in self.iterate_modification()]
-        for node in allNodes:
-            if node.next.data == data:
-                node.next = node.next.next
-                node.next.next.prev = node
-                self.size -= 1
-                return
+        return len(self.size)
 
 
 
 
 
-class MyStack:
-
-    def __init__(self):
-        self.stack = deque()
-
-    def push(self, element):
-        self.stack.append(element)
-        return
-
-    def pop(self):
-        return self.stack.pop(0)
-
-    def top(self):
-        return self.stack[-1]
-
-    def size(self):
-        return len(self.stack)
 
 
 
 
-class MyQueue:
 
-    def __init__(self):
-        self.queue = deque()
 
-    def push(self, element):
-        self.queue.append(element)
-        return
 
-    def pop(self):
-        return self.queue.pop(0)
-
-    def show_left(self):
-        return self.queue[0]
-
-    def show_right(self):
-        return self.queue[-1]
-
-    def size(self):
-        return len(self.queue)
 
 
 
