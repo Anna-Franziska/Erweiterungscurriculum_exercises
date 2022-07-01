@@ -1,160 +1,68 @@
-# Exercise 6
+def count_integer(numbers, integer):
+    counter = 0
+    for i in numbers:  # use of the for loop to iterate over the list
+        if i == integer:
+            counter += 1  # += allows the loop to move on by 1 increment
+    if counter == 0:  # Code specifies that if the integer doesn't exist it should return -1
+        counter = -1
+        return counter
+
+
+def compare_lists(list1, list2):
+    common_list = list()  # ensures a common list
+
+    longer_list = list1 if len(list1) >= len(list2) else list2  # the elements of the lists are compared
+    shorter_list = list2 if len(list1) >= len(list2) else list1
+
+    return ([
+        element for element in shorter_list if element in longer_list
+        # making sure elements found in both lists are added to new list
+    ])
+
+
+def count_vowels(text):
+    if type(text) == str:  # if the data type is a string it counts the vowels
+        return len([letter for letter in text.lower() if letter in ["a", "e", "i", "o",
+                                                                    "u"]])  # counts the vowels using len after specifing which letters are vowels
+    else:
+        return -1  # if the data type is not a string it returns -1
+
+
+def hamming(text1, text2):
+    if len(text1) <= len(text2):
+        h = len(text2) - len(text1)  # = 0 if len(text1) == len(text2)
+        for i in range(len(text1)):
+            if text1[i] != text2[i]:
+                h += 1
+
+    else:
+        assert len(text1) > len(text2) #assert ensures that the file cannot be different than specified
+        h = len(text1) - len(text2)
+        for i in range(len(text2)):
+            if text1[i] != text2[i]:
+                h += 1
+    return h
+
+
 def transform_to_row(infile, outfile):
-    with open("infile.txt", "r") as reader:
-        f = reader.readlines()
-        for line in f:
-            f = line.split(",")
+    with open(infile, "r") as reader:  # with open ensures you don't have to close the file
+        i = reader.readlines()  # first opened in reader format to "read" the text
+        for line in i:
+            i = line.split(",")  # line ist split by a ","
 
-    with open("outfile.txt", "w") as writer:
-        for line in f:
-            writer.write(line + "\n")
-
-
-def add_greeting(infile, outfile):
-    with open("infile.txt", "r") as reader:
-        f = reader.readlines()
-    with open("outfile.txt", "w") as writer:
-        for line in f:
-            writer.write("hello" + line)
+    with open(outfile, "w") as writer:  # new file is created in writing mode
+        for line in i:
+            writer.write(
+                line + "\n")  # the previously read files are written into the outfile with a break after each line
 
 
-def strip_greeting(infile, outfile):
-    with open("infile.txt", "r") as reader:
-        f = reader.readlines()
-        strip_the_greeting = []
-        for line in f:
-            strip_the_greeting.append(line.strip("hello"))
+def remove_duplicates(lst):
+    set_of_list = list(
+        set(lst))  # making sure argument will become a list + using built in function set to remove duplicates
+    if len(lst) == len(
+            set_of_list):  # len returns the number of items in the object, returns list as is if no duplicates found
+        print("No duplicates found in list")  # additionally prints statement
 
-    with open(outfile, "w") as writer:
-        for line in strip_the_greeting:
-            writer.write(line)
+    return set_of_list
 
-
-def combine_files(file1, file2, outfile):
-
-
-
-#Exercise 7
-import random
-from nltk.corpus import names, wordnet
-
-def generate_names(char, num):
-    male_names = names.words("male.txt")
-    female_names = names.words("female.txt")
-
-    male_names_filtered = [(n, "male") for n in male_names if n[0].lower() == char.lower()]
-    female_names_filtered = [(n, "female") for n in female_names if n[0].lower() == char.lower()]
-
-    n_male_names = choose_n_random(male_names_filtered, num)
-    n_female_names = choose_n_random(female_names_filtered, num)
-
-    write_names_file(n_male_names, char, num, "male")
-    write_names_file(n_female_names, char, num, "female")
-
-    return n_male_names + n_female_names
-
-
-def choose_n_random(l, n):
-    if n <= 0:
-        return list()  #if n value is larger than the list return the whole list instead
-
-    if n >= len(l):
-        return l
-
-    choices = list()
-    while len(choices) != n:
-        c = random.choice(l)
-        if c not in choices:
-            choices.append(c)
-
-    return choices
-
-
-def write_names_file(l, char, num, gender):
-    with open(f"{char.upper()} names-{gender}-{num}.txt", "w") as male_file:
-        for n in l:
-            line = f"{n[0]}\n"
-            male_file.write(line)
-
-
-class SynAnt:
-    wordlist: list
-
-    def __init__(self, wordlist):
-        self.wordlist = wordlist
-
-
-    def output(self):
-        synyms = syn.find_synonyms()
-        anyms = syn.find_antonyms()
-
-        all_words = {
-            word: {
-                "Synonyms": synyms[word],
-                "Antonyms": anyms[word]
-            }
-            for word in self.wordlist
-        }
-
-        for word in all_words:
-            nice_synonyms = ", ".join(all_words[word]["Synonyms"])
-            nice_antonyms = ", ".join(all_words[word]["Antonyms"])
-            o = f"{word}:\n\tSynonyms: {nice_synonyms}\n\tAntonyms: {nice_antonyms}"  #organizes the output more
-            print(o)
-
-
-
-    def find_synonyms(self):
-        synonyms = {
-            # word: [list of synonyms]
-            word: list()
-            for word in self.wordlist
-        }
-        for word in self.wordlist:
-            # find synonyms
-            synsets = wordnet.synsets(word)
-
-            for synset in synsets:
-                for lemma in synset.lemmas():  #lemma helps find the dictionary form of a word
-                    synonym = lemma.name()
-                    if synonym not in synonyms[word]:
-                        synonyms[word].append(synonym)
-
-        return synonyms
-
-    def find_antonyms(self):
-        antonyms = {
-            # word: [list of antonyms]
-            word: list()
-            for word in self.wordlist
-        }
-
-        for word in self.wordlist:
-            # find synonyms
-            synsets = wordnet.synsets(word)
-            for synset in synsets:
-                for lemma in synset.lemmas():
-                    if lemma.antonyms():
-                        for antonym in lemma.antonyms():
-                            a = antonym.name()
-                            if a not in antonyms[word]:
-                                antonyms[word].append(a)
-
-        return antonyms
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# practise list = my_list = [1,1,2,2,3,3,4,5]
